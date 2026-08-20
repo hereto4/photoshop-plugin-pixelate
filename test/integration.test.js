@@ -29,7 +29,7 @@ const photoshop = require("./fakes/photoshop.js");
 const { installScenario, world, readRect } = photoshop.__test;
 const { LayerKind } = photoshop.constants;
 
-const { pixelateActiveLayer } = require("../pixelate.js");
+const { pixelateActiveLayer, SIZES: SHIPPED_SIZES } = require("../pixelate.js");
 const { referencePixelate, makeImage } = require("./helpers/reference.js");
 
 function activeLayerNamed(name) {
@@ -62,9 +62,10 @@ test("pixelates a full-canvas layer to exactly the reference result", async () =
 });
 
 test("every preset lands on the reference result", async () => {
-  const width = 257;
-  const height = 193;
-  for (const size of [16, 32, 64, 128]) {
+  // Wider than the largest preset, so no preset degenerates into a no-op.
+  const width = 1500;
+  const height = 1100;
+  for (const size of SHIPPED_SIZES) {
     const pixels = makeImage(width, height, 4, size + 3);
     installScenario({
       width,
@@ -308,7 +309,10 @@ test("an unsupported size is refused", async () => {
     height: 64,
     layers: [{ name: "Art", bounds: { left: 0, top: 0, right: 64, bottom: 64 } }],
   });
-  await assert.rejects(() => pixelateActiveLayer({ size: 48 }), /Choose 16, 32, 64 or 128/);
+  await assert.rejects(
+    () => pixelateActiveLayer({ size: 48 }),
+    /Choose one of 16, 32, 64, 128, 256, 512, 1024/
+  );
 });
 
 test("a layer already smaller than the target is left alone", async () => {
@@ -739,6 +743,52 @@ test("the panel registers its panel and all four commands", () => {
   }
 });
 
+test("all seven presets are wired end to end", async () => {
+  for (const size of SHIPPED_SIZES) {
+    const width = 1400;
+    const height = 1400;
+    const pixels = makeImage(width, height, 4, size);
+    installScenario({
+      width,
+      height,
+      layers: [
+        {
+          name: "Art",
+          bounds: { left: 0, top: 0, right: width, bottom: height },
+          pixels: pixels.slice(),
+        },
+      ],
+    });
+    const result = await pixelateActiveLayer({ size, duplicate: false });
+    assert.equal(result.noop, false, `${size} px should not be a no-op here`);
+    assert.equal(result.cells.width, size);
+    assert.equal(result.cells.height, size);
+    assert.equal(result.blockWidth, width / size);
+  }
+});
+
+test("a large preset is a no-op on an image smaller than it", async () => {
+  installScenario({
+    width: 800,
+    height: 600,
+    layers: [
+      {
+        name: "Art",
+        bounds: { left: 0, top: 0, right: 800, bottom: 600 },
+        pixels: makeImage(800, 600, 4, 5),
+      },
+    ],
+  });
+
+  const result = await pixelateActiveLayer({ size: 1024, duplicate: true });
+
+  assert.equal(result.noop, true);
+  assert.equal(result.reason, "already-smaller");
+  assert.equal(result.longEdge, 800);
+  assert.equal(world.putCalls.length, 0);
+  assert.equal(world.document.layers.length, 1, "a no-op must not leave a duplicate");
+});
+
 test("the panel starts on 32 px / layer bounds with both options on", () => {
   require("../main.js");
 
@@ -752,12 +802,9 @@ test("the panel starts on 32 px / layer bounds with both options on", () => {
 
 test("selection is shown inline as well as by class, so it survives missing CSS", () => {
   require("../main.js");
-  const selected = dom.sizeGroup.children.find(
-    (child) => child.getAttribute("data-size") === "32"
-  );
-  const unselected = dom.sizeGroup.children.find(
-    (child) => child.getAttribute("data-size") === "16"
-  );
+  const segments = dom.segmentsOf(dom.sizeGroup);
+  const selected = segments.find((child) => child.getAttribute("data-size") === "32");
+  const unselected = segments.find((child) => child.getAttribute("data-size") === "16");
   assert.match(selected.style.backgroundColor, /38, 128, 235/);
   assert.match(unselected.style.backgroundColor, /127, 127, 127/);
 });
@@ -951,6 +998,55 @@ test("a shaped selection spanning the whole canvas is still respected", async ()
   const result = await pixelateActiveLayer({ size: 32, duplicate: false, limitToSelection: true });
 
   assert.equal(result.limitedToSelection, true, "a shaped selection must be honoured");
+});
+
+test("the panel, the manifest and the worker agree on the size list", () => {
+  const fs = require("node:fs");
+  const root = path.join(__dirname, "..");
+  const read = (name) => fs.readFileSync(path.join(root, name), "utf8");
+
+  const literal = (source) => {
+    const match = source.match(/const SIZES = \[([^\]]+)\];/);
+    assert.ok(match, "no SIZES literal found");
+    return match[1].split(",").map((part) => Number(part.trim()));
+  };
+
+  // main.js keeps its own copy on purpose: it must not require the worker at
+  // module scope. So assert the copies agree rather than trusting them to.
+  assert.deepEqual(literal(read("main.js")), SHIPPED_SIZES);
+
+  const buttons = [...read("index.html").matchAll(/data-size="(\d+)"/g)].map((m) =>
+    Number(m[1])
+  );
+  assert.deepEqual(buttons, SHIPPED_SIZES, "index.html buttons drifted from SIZES");
+
+  const manifest = JSON.parse(read("manifest.json"));
+  const commands = manifest.entrypoints
+    .filter((entry) => entry.type === "command")
+    .map((entry) => entry.id);
+  assert.deepEqual(
+    commands,
+    SHIPPED_SIZES.map((size) => `pixelate${size}`),
+    "manifest commands drifted from SIZES"
+  );
+  for (const size of SHIPPED_SIZES) {
+    const entry = manifest.entrypoints.find((e) => e.id === `pixelate${size}`);
+    assert.equal(entry.label.default, `Pixelate to ${size} px`);
+  }
+});
+
+test("every manifest command is registered by the panel", () => {
+  const uxp = require("./fakes/uxp.js");
+  require("../main.js");
+  const config = uxp.__test.registrations[uxp.__test.registrations.length - 1];
+  for (const size of SHIPPED_SIZES) {
+    assert.equal(
+      typeof config.commands[`pixelate${size}`].run,
+      "function",
+      `command pixelate${size} is not registered`
+    );
+  }
+  assert.equal(Object.keys(config.commands).length, SHIPPED_SIZES.length);
 });
 
 /* ------------------------------------------------------------------ *

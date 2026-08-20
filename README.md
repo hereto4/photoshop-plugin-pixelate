@@ -1,9 +1,9 @@
 # True Pixelate
 
 A Photoshop UXP plugin that pixelates the selected layer the way a real
-downsize does — as if the layer had been resampled to 16, 32, 64 or 128 px
-with **nearest neighbour** and then blown straight back up. The image is never
-actually resized.
+downsize does — as if the layer had been resampled to 16, 32, 64, 128, 256,
+512 or 1024 px with **nearest neighbour** and then blown straight back up. The
+image is never actually resized.
 
 ![Source, True Pixelate, and a Mosaic-style average side by side](docs/preview.png)
 
@@ -26,7 +26,7 @@ you're after genuine pixel-art or retro-hardware output:
 | Block colour | mean of the block | one real source pixel |
 | Palette | invents new colours | only colours already in the image |
 | Fine detail | blurs to grey | aliases in or out, hard |
-| Block grid | cell size in px | a target resolution (16/32/64/128) |
+| Block grid | cell size in px | a target resolution (16 – 1024 px) |
 | Output size | unchanged | unchanged |
 
 Because each block's colour is copied from a pixel *inside* that block, the
@@ -34,10 +34,15 @@ result is idempotent: running 32 px twice is identical to running it once.
 
 ## Options
 
-**Downsample to** — 16, 32, 64 or 128 px. This is the long edge of the
-imaginary downsized image, not an output size. The short edge follows the
-aspect ratio, exactly like Image Size with Constrain Proportions on. At 32 px a
-1920 × 1080 layer becomes 32 × 18 blocks of roughly 60 px each.
+**Downsample to** — 16, 32, 64, 128, 256, 512 or 1024 px. This is the long
+edge of the imaginary downsized image, not an output size. The short edge
+follows the aspect ratio, exactly like Image Size with Constrain Proportions on.
+At 32 px a 1920 × 1080 layer becomes 32 × 18 blocks of roughly 60 px each; at
+512 px the same layer becomes 512 × 288 blocks of under 4 px each.
+
+The larger presets only do something when the target is actually smaller than
+what you point them at. Ask for 1024 px on an 800 px layer and the plugin says
+so and leaves the layer alone, rather than upscaling it to nothing.
 
 **Measured against**
 
@@ -66,7 +71,7 @@ it. Runs that would change nothing (a layer already at or below the target, a
 selection that misses the layer) report why and leave the document untouched —
 no stray duplicate layer, no empty undo step.
 
-The four sizes are also on the **Plugins** menu as *Pixelate to 16 px* and so
+All seven sizes are also on the **Plugins** menu as *Pixelate to 16 px* and so
 on, using whatever the panel's other options are currently set to. Those menu
 items can be recorded into an Action if you want a keyboard shortcut.
 
@@ -144,7 +149,7 @@ somewhere to report a failure even if those modules fail to load.
 ## Tests
 
 ```sh
-npm test          # 79 tests, no dependencies
+npm test          # 83 tests, no dependencies
 npm run preview   # regenerate docs/preview.png
 npm run icons     # regenerate icons/ (needs python3)
 ```
@@ -158,3 +163,9 @@ entrypoint registration fails. The key check compares output against
 thing — allocate a small buffer, downsize into it, upsize back out — proving the
 fused single-pass implementation is byte-identical to a true downsize/upsize
 round trip at every preset.
+
+One test reads [main.js](main.js), [index.html](index.html) and
+[manifest.json](manifest.json) back as text and checks the size list matches
+`SIZES` in [pixelate.js](pixelate.js). `main.js` deliberately keeps its own copy
+of that list rather than importing it, so this guards the one place the four
+copies could quietly drift apart.

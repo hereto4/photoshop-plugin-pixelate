@@ -44,9 +44,18 @@ class FakeElement {
     };
   }
 
+  /** Descendant search, in document order, like the real querySelectorAll. */
   querySelectorAll(selector) {
     const wanted = selector.replace(/^\./, "");
-    return this.children.filter((child) => child.classes.has(wanted));
+    const found = [];
+    const walk = (node) => {
+      for (const child of node.children) {
+        if (child.classes.has(wanted)) found.push(child);
+        walk(child);
+      }
+    };
+    walk(this);
+    return found;
   }
 }
 
@@ -59,12 +68,19 @@ function install() {
     return element;
   };
 
+  // Two rows, exactly as index.html lays them out.
   const sizeGroup = make({ id: "sizeGroup" });
-  for (const size of [16, 32, 64, 128]) {
-    sizeGroup.children.push(
-      new FakeElement({ classes: ["segment"], attrs: { "data-size": String(size) } })
-    );
+  for (const row of [[16, 32, 64, 128], [256, 512, 1024]]) {
+    const rowElement = new FakeElement({ classes: ["segmented"] });
+    for (const size of row) {
+      rowElement.children.push(
+        new FakeElement({ classes: ["segment"], attrs: { "data-size": String(size) } })
+      );
+    }
+    sizeGroup.children.push(rowElement);
   }
+  // The alignment spacer must not be mistaken for a button.
+  sizeGroup.children[1].children.push(new FakeElement({ classes: ["segment-spacer"] }));
 
   const basisGroup = make({ id: "basisGroup" });
   for (const basis of ["layer", "canvas"]) {
@@ -91,8 +107,10 @@ function install() {
   global.document = document;
 
   /** Click the segment carrying the given attribute value. */
+  const segmentsOf = (group) => group.querySelectorAll(".segment");
+
   const clickSegment = (group, attribute, value) => {
-    const segment = group.children.find(
+    const segment = segmentsOf(group).find(
       (child) => child.getAttribute(attribute) === String(value)
     );
     if (!segment) throw new Error(`no segment with ${attribute}=${value}`);
@@ -100,11 +118,11 @@ function install() {
   };
 
   const selectedValues = (group, attribute) =>
-    group.children
+    segmentsOf(group)
       .filter((child) => child.classes.has("segment-selected"))
       .map((child) => child.getAttribute(attribute));
 
-  return { document, byId, sizeGroup, basisGroup, clickSegment, selectedValues };
+  return { document, byId, sizeGroup, basisGroup, clickSegment, selectedValues, segmentsOf };
 }
 
 module.exports = { install, FakeElement };

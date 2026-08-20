@@ -11,7 +11,7 @@
 
 "use strict";
 
-const SIZES = [16, 32, 64, 128];
+const SIZES = [16, 32, 64, 128, 256, 512, 1024];
 const BASIS_LAYER = "layer";
 const BASIS_CANVAS = "canvas";
 
@@ -306,12 +306,10 @@ function registerEntrypoints() {
           show() {},
         },
       },
-      commands: {
-        pixelate16: { run: () => runFromCommand(16) },
-        pixelate32: { run: () => runFromCommand(32) },
-        pixelate64: { run: () => runFromCommand(64) },
-        pixelate128: { run: () => runFromCommand(128) },
-      },
+      commands: SIZES.reduce((commands, size) => {
+        commands[`pixelate${size}`] = { run: () => runFromCommand(size) };
+        return commands;
+      }, {}),
     });
     return true;
   } catch (error) {

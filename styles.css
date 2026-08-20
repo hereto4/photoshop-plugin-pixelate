@@ -57,6 +57,18 @@ body {
   margin-right: 0;
 }
 
+/* Second row of size buttons. */
+.segmented-next {
+  margin-top: 4px;
+}
+
+/* Empty eighth cell, so seven buttons still read as a tidy 4 x 2 grid. */
+.segment-spacer {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+}
+
 .segment:hover {
   background-color: rgba(127, 127, 127, 0.34);
 }

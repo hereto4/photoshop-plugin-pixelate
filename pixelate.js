@@ -12,7 +12,7 @@ const { app, core, constants, imaging } = require("photoshop");
 const { buildSampleMap, remapPixels, blendWithMask } = require("./nn.js");
 const { planPixelation, BASIS_LAYER, BASIS_CANVAS } = require("./plan.js");
 
-const SIZES = [16, 32, 64, 128];
+const SIZES = [16, 32, 64, 128, 256, 512, 1024];
 
 /** Errors we raise ourselves and are happy to show the user verbatim. */
 class PixelateError extends Error {
@@ -235,7 +235,9 @@ async function prepareTargetLayer(layer, options) {
 async function pixelateActiveLayer(options) {
   const size = Number(options.size);
   if (!SIZES.includes(size)) {
-    throw new PixelateError(`Unsupported size ${options.size}. Choose 16, 32, 64 or 128.`);
+    throw new PixelateError(
+      `Unsupported size ${options.size}. Choose one of ${SIZES.join(", ")}.`
+    );
   }
   const basis = options.basis === BASIS_CANVAS ? BASIS_CANVAS : BASIS_LAYER;
   const duplicate = options.duplicate !== false;

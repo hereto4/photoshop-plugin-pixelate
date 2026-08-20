@@ -3,6 +3,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
+const SHIPPED_SIZES = [16, 32, 64, 128, 256, 512, 1024];
+
 const {
   downsampleSize,
   cellIndex,
@@ -62,8 +64,8 @@ test("downsampleSize reports a no-op when already at or below target", () => {
   assert.equal(small.height, 10);
 });
 
-test("all four shipped presets round-trip through downsampleSize", () => {
-  for (const target of [16, 32, 64, 128]) {
+test("all shipped presets round-trip through downsampleSize", () => {
+  for (const target of SHIPPED_SIZES) {
     const { width, height, noop } = downsampleSize(1920, 1080, target);
     assert.equal(noop, false);
     assert.equal(width, target);
@@ -84,7 +86,7 @@ test("cellIndex clamps coordinates outside the grid to the edge cells", () => {
 
 test("a cell always samples a coordinate inside itself (pixelation is idempotent)", () => {
   for (let gridSize = 1; gridSize <= 300; gridSize++) {
-    for (const target of [16, 32, 64, 128]) {
+    for (const target of SHIPPED_SIZES) {
       const cellCount = downsampleSize(gridSize, 1, target).width;
       for (let c = 0; c < cellCount; c++) {
         const sample = cellSample(c, gridSize, cellCount);
@@ -154,7 +156,7 @@ test("remapPixels matches a true downsize-then-upsize for every preset", () => {
   ];
   for (const [width, height, components] of cases) {
     const src = makeImage(width, height, components, width * height + components);
-    for (const target of [16, 32, 64, 128]) {
+    for (const target of SHIPPED_SIZES) {
       const expected = referencePixelate(src, width, height, components, target);
       const actual = pixelateViaProduction(src, width, height, components, target);
       assert.deepEqual(
@@ -168,7 +170,7 @@ test("remapPixels matches a true downsize-then-upsize for every preset", () => {
 
 test("remapPixels is idempotent: pixelating twice changes nothing", () => {
   const src = makeImage(157, 231, 4, 7);
-  for (const target of [16, 32, 64, 128]) {
+  for (const target of SHIPPED_SIZES) {
     const once = pixelateViaProduction(src, 157, 231, 4, target);
     const twice = pixelateViaProduction(once, 157, 231, 4, target);
     assert.deepEqual(Array.from(twice), Array.from(once), `not idempotent @ ${target}px`);

@@ -3,6 +3,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
+const SHIPPED_SIZES = [16, 32, 64, 128, 256, 512, 1024];
+
 const { planPixelation } = require("../plan.js");
 
 const CANVAS = { width: 2000, height: 1000 };
@@ -146,7 +148,7 @@ test("a layer hanging off the canvas still covers all its own pixels", () => {
 });
 
 test("every preset yields the expected cell count for a square canvas", () => {
-  for (const size of [16, 32, 64, 128]) {
+  for (const size of SHIPPED_SIZES) {
     const plan = planPixelation({
       layerBounds: { left: 0, top: 0, right: 4096, bottom: 4096 },
       canvas: { width: 4096, height: 4096 },

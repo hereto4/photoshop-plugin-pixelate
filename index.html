@@ -8,11 +8,20 @@
     <div class="panel">
       <div class="block">
         <div class="block-label">DOWNSAMPLE TO</div>
-        <div class="segmented" id="sizeGroup">
-          <div class="segment" data-size="16">16</div>
-          <div class="segment" data-size="32">32</div>
-          <div class="segment" data-size="64">64</div>
-          <div class="segment segment-last" data-size="128">128</div>
+        <div id="sizeGroup">
+          <div class="segmented">
+            <div class="segment" data-size="16">16</div>
+            <div class="segment" data-size="32">32</div>
+            <div class="segment" data-size="64">64</div>
+            <div class="segment segment-last" data-size="128">128</div>
+          </div>
+          <div class="segmented segmented-next">
+            <div class="segment" data-size="256">256</div>
+            <div class="segment" data-size="512">512</div>
+            <div class="segment" data-size="1024">1024</div>
+            <!-- Keeps the second row's columns lined up with the first's. -->
+            <div class="segment-spacer"></div>
+          </div>
         </div>
       </div>
 

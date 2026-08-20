@@ -18,30 +18,71 @@
       "label": {
         "default": "True Pixelate"
       },
-      "minimumSize": { "width": 220, "height": 260 },
-      "maximumSize": { "width": 800, "height": 900 },
-      "preferredDockedSize": { "width": 240, "height": 330 },
-      "preferredFloatingSize": { "width": 300, "height": 360 }
+      "minimumSize": {
+        "width": 220,
+        "height": 290
+      },
+      "maximumSize": {
+        "width": 800,
+        "height": 900
+      },
+      "preferredDockedSize": {
+        "width": 240,
+        "height": 365
+      },
+      "preferredFloatingSize": {
+        "width": 300,
+        "height": 395
+      }
     },
     {
       "type": "command",
       "id": "pixelate16",
-      "label": { "default": "Pixelate to 16 px" }
+      "label": {
+        "default": "Pixelate to 16 px"
+      }
     },
     {
       "type": "command",
       "id": "pixelate32",
-      "label": { "default": "Pixelate to 32 px" }
+      "label": {
+        "default": "Pixelate to 32 px"
+      }
     },
     {
       "type": "command",
       "id": "pixelate64",
-      "label": { "default": "Pixelate to 64 px" }
+      "label": {
+        "default": "Pixelate to 64 px"
+      }
     },
     {
       "type": "command",
       "id": "pixelate128",
-      "label": { "default": "Pixelate to 128 px" }
+      "label": {
+        "default": "Pixelate to 128 px"
+      }
+    },
+    {
+      "type": "command",
+      "id": "pixelate256",
+      "label": {
+        "default": "Pixelate to 256 px"
+      }
+    },
+    {
+      "type": "command",
+      "id": "pixelate512",
+      "label": {
+        "default": "Pixelate to 512 px"
+      }
+    },
+    {
+      "type": "command",
+      "id": "pixelate1024",
+      "label": {
+        "default": "Pixelate to 1024 px"
+      }
     }
   ],
   "icons": [
@@ -49,17 +90,34 @@
       "width": 24,
       "height": 24,
       "path": "icons/dark.png",
-      "scale": [1, 2],
-      "theme": ["darkest", "dark", "medium"],
-      "species": ["generic"]
+      "scale": [
+        1,
+        2
+      ],
+      "theme": [
+        "darkest",
+        "dark",
+        "medium"
+      ],
+      "species": [
+        "generic"
+      ]
     },
     {
       "width": 24,
       "height": 24,
       "path": "icons/light.png",
-      "scale": [1, 2],
-      "theme": ["lightest", "light"],
-      "species": ["generic"]
+      "scale": [
+        1,
+        2
+      ],
+      "theme": [
+        "lightest",
+        "light"
+      ],
+      "species": [
+        "generic"
+      ]
     }
   ]
 }

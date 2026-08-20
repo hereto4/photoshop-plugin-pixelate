@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="panel">
+      <div class="block">
+        <div class="block-label">DOWNSAMPLE TO</div>
+        <div class="segmented" id="sizeGroup">
+          <div class="segment" data-size="16">16</div>
+          <div class="segment" data-size="32">32</div>
+          <div class="segment" data-size="64">64</div>
+          <div class="segment segment-last" data-size="128">128</div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-label">MEASURED AGAINST</div>
+        <div class="segmented" id="basisGroup">
+          <div class="segment" data-basis="layer">Layer bounds</div>
+          <div class="segment segment-last" data-basis="canvas">Canvas</div>
+        </div>
+      </div>
+
+      <div class="hint" id="hint"></div>
+
+      <div class="check" id="duplicate">
+        <div class="check-box" id="duplicateBox"></div>
+        <div class="check-label">Work on a duplicate layer</div>
+      </div>
+      <div class="check" id="limitToSelection">
+        <div class="check-box" id="limitToSelectionBox"></div>
+        <div class="check-label">Limit to active selection</div>
+      </div>
+
+      <div class="run" id="run">Pixelate</div>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>

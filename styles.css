@@ -1,0 +1,133 @@
+/*
+ * Every control is a plain div, styled by hand. No Spectrum (sp-*) widgets:
+ * they were the one part of the panel whose behaviour depended on the host's
+ * widget layer, and a panel that can't be clicked is worse than one that
+ * doesn't perfectly match Photoshop's chrome.
+ *
+ * Only widely supported properties are used, and main.js also sets the
+ * selection background inline, so the panel still shows what's selected even
+ * if this stylesheet fails to load or parse.
+ */
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.block-label {
+  font-size: 9px;
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
+.segmented {
+  display: flex;
+  flex-direction: row;
+}
+
+.segment {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+  text-align: center;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  margin-right: 4px;
+  border-radius: 4px;
+  background-color: rgba(127, 127, 127, 0.2);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.segment-last {
+  margin-right: 0;
+}
+
+.segment:hover {
+  background-color: rgba(127, 127, 127, 0.34);
+}
+
+.segment-selected {
+  color: #ffffff;
+}
+
+.hint {
+  font-size: 10px;
+  line-height: 14px;
+  opacity: 0.6;
+  margin-bottom: 12px;
+}
+
+.check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.check-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background-color: rgba(127, 127, 127, 0.22);
+  text-align: center;
+  font-size: 10px;
+  line-height: 14px;
+  margin-right: 8px;
+}
+
+.check-box-on {
+  color: #ffffff;
+}
+
+.check-label {
+  font-size: 12px;
+}
+
+.run {
+  text-align: center;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background-color: rgb(38, 128, 235);
+  color: #ffffff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.run:hover {
+  background-color: rgb(20, 115, 230);
+}
+
+.run-busy {
+  opacity: 0.6;
+}
+
+.status {
+  font-size: 10px;
+  line-height: 14px;
+  min-height: 28px;
+  opacity: 0.85;
+}
+
+.status-error {
+  color: rgb(240, 90, 90);
+  opacity: 1;
+}

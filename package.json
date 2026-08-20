@@ -1,0 +1,14 @@
+{
+  "name": "true-pixelate",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Photoshop UXP plugin: pixelate a layer as if it had been downsized with nearest-neighbour sampling, without resizing the image.",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\"",
+    "icons": "python3 tools/make-icons.py",
+    "preview": "node tools/preview.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

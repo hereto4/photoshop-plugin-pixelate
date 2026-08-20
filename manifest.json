@@ -1,0 +1,65 @@
+{
+  "manifestVersion": 5,
+  "id": "com.phatmojo.true-pixelate",
+  "name": "True Pixelate",
+  "version": "1.0.0",
+  "main": "index.html",
+  "host": {
+    "app": "PS",
+    "minVersion": "27.0.0",
+    "data": {
+      "apiVersion": 2
+    }
+  },
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "truePixelate",
+      "label": {
+        "default": "True Pixelate"
+      },
+      "minimumSize": { "width": 220, "height": 260 },
+      "maximumSize": { "width": 800, "height": 900 },
+      "preferredDockedSize": { "width": 240, "height": 330 },
+      "preferredFloatingSize": { "width": 300, "height": 360 }
+    },
+    {
+      "type": "command",
+      "id": "pixelate16",
+      "label": { "default": "Pixelate to 16 px" }
+    },
+    {
+      "type": "command",
+      "id": "pixelate32",
+      "label": { "default": "Pixelate to 32 px" }
+    },
+    {
+      "type": "command",
+      "id": "pixelate64",
+      "label": { "default": "Pixelate to 64 px" }
+    },
+    {
+      "type": "command",
+      "id": "pixelate128",
+      "label": { "default": "Pixelate to 128 px" }
+    }
+  ],
+  "icons": [
+    {
+      "width": 24,
+      "height": 24,
+      "path": "icons/dark.png",
+      "scale": [1, 2],
+      "theme": ["darkest", "dark", "medium"],
+      "species": ["generic"]
+    },
+    {
+      "width": 24,
+      "height": 24,
+      "path": "icons/light.png",
+      "scale": [1, 2],
+      "theme": ["lightest", "light"],
+      "species": ["generic"]
+    }
+  ]
+}
